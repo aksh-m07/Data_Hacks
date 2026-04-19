@@ -268,6 +268,17 @@ body {
   }
 }
 
+.wf-layout > .groq-box--wide,
+.wf-layout > .wf-voice-panel--wide {
+  grid-column: 1 / -1;
+}
+
+.groq-box--wide .briefing {
+  max-height: min(42vh, 22rem);
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
 .wf-col-main {
   min-width: 0;
 }

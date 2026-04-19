@@ -358,55 +358,55 @@ export function WildfireDashboard({ survivorDistressRows, onInboxRefresh }: Prop
           ) : (
             <div className="map-placeholder">Map appears when a location is set and weather loads.</div>
           )}
+        </aside>
 
-          <section className="groq-box">
-            <h2>Voice briefing (Groq)</h2>
-            {wf.briefingErr ? <p className="small err">{wf.briefingErr}</p> : null}
-            <p className="briefing">{wf.briefing || (wf.loading ? "Generating briefing…" : "—")}</p>
-          </section>
+        <section className="groq-box groq-box--wide" aria-label="Groq voice briefing">
+          <h2>Voice briefing (Groq)</h2>
+          {wf.briefingErr ? <p className="small err">{wf.briefingErr}</p> : null}
+          <p className="briefing">{wf.briefing || (wf.loading ? "Generating briefing…" : "—")}</p>
+        </section>
 
-          <section className="wf-voice-panel">
-            <h2 className="wf-voice-title">Instructions for helpers (voice → text)</h2>
-            <p className="wf-voice-hint">
-              Dictate or type a message, then <strong>Broadcast alert</strong>. The <strong>Survivor</strong> dashboard
-              shows a popup with <strong>Read aloud</strong> — not here. Incoming distress from Survivor is listed in
-              the table below.
-            </p>
-            {voice.supported ? (
-              <button
-                type="button"
-                className={`btn ghost wf-voice-btn ${voice.listening ? "btn-live" : ""}`}
-                onClick={() => voice.toggle()}
-              >
-                {voice.listening ? "Stop recording" : "Start voice dictation"}
-              </button>
-            ) : (
-              <p className="wf-voice-unsupported small">
-                Speech recognition not available in this browser — type in the message field.
-              </p>
-            )}
-            <label className="wf-voice-label" htmlFor="wf-instructions">
-              Message for broadcast
-            </label>
-            <textarea
-              id="wf-instructions"
-              className="wf-voice-textarea"
-              rows={5}
-              placeholder="Spoken instructions appear here — or type directly."
-              value={instructionText}
-              onChange={(e) => setInstructionText(e.target.value)}
-            />
+        <section className="wf-voice-panel wf-voice-panel--wide">
+          <h2 className="wf-voice-title">Instructions for helpers (voice → text)</h2>
+          <p className="wf-voice-hint">
+            Dictate or type a message, then <strong>Broadcast alert</strong>. The <strong>Survivor</strong> dashboard
+            shows a popup with <strong>Read aloud</strong> — not here. Incoming distress from Survivor is listed in
+            the table below.
+          </p>
+          {voice.supported ? (
             <button
               type="button"
-              className="broadcast-alert-btn"
-              aria-label="Broadcast station message to other tabs"
-              onPointerDown={onBroadcastPointerDown}
-              onClick={broadcastAlert}
+              className={`btn ghost wf-voice-btn ${voice.listening ? "btn-live" : ""}`}
+              onClick={() => voice.toggle()}
             >
-              Broadcast alert
+              {voice.listening ? "Stop recording" : "Start voice dictation"}
             </button>
-          </section>
-        </aside>
+          ) : (
+            <p className="wf-voice-unsupported small">
+              Speech recognition not available in this browser — type in the message field.
+            </p>
+          )}
+          <label className="wf-voice-label" htmlFor="wf-instructions">
+            Message for broadcast
+          </label>
+          <textarea
+            id="wf-instructions"
+            className="wf-voice-textarea"
+            rows={5}
+            placeholder="Spoken instructions appear here — or type directly."
+            value={instructionText}
+            onChange={(e) => setInstructionText(e.target.value)}
+          />
+          <button
+            type="button"
+            className="broadcast-alert-btn"
+            aria-label="Broadcast station message to other tabs"
+            onPointerDown={onBroadcastPointerDown}
+            onClick={broadcastAlert}
+          >
+            Broadcast alert
+          </button>
+        </section>
       </div>
 
       <section
