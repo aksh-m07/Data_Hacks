@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { URL } from "node:url";
 
 const PORT = Number.parseInt(process.env.PULSE_BRIDGE_PORT ?? "8787", 10);
-const APP_LINK_SCHEME = process.env.PULSE_APP_SCHEME ?? "disasterdocs-pulse://measure";
+const APP_LINK_SCHEME = process.env.PULSE_APP_SCHEME ?? "groundzero-pulse://measure";
 const WEB_MEASURE_BASE = process.env.PULSE_WEB_MEASURE_URL ?? "http://localhost:8787/iphone-measure";
 const SESSION_TTL_MS = 1000 * 60 * 10;
 

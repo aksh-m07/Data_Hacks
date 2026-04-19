@@ -1,39 +1,65 @@
 import type { RawFeatures } from "./features";
 
 export type TenDayEstimateInput = {
-  /** ONNX calibrated index 0–100 (same pipeline as before). */
+  /** ONNX calibrated index 0–100 (see scoreCalibration.ts). */
   calibratedScore: number;
+  /** Raw regressor output — when stuck ~11–14 the model has little spread; we lean on live weather. */
+  rawOnnxScore?: number;
   raw: RawFeatures;
   nearestFireKm: number | null;
   /** Count of CA FIRMS hotspots in window (regional activity). */
   firmsHotspots: number;
 };
 
+function clamp01(x: number): number {
+  return Math.max(0, Math.min(1, x));
+}
+
 /**
- * Heuristic 0–100% shown as “wildfire in the next ~10 days” in the UI.
- * Blends the risk model index with dryness, wind, smoke, distance to hotspots,
- * regional fire counts, and season. Not a certified forecast — demo / decision-support only.
+ * Live environmental / fuel stress on a 0–~96 scale (not the ONNX path).
+ * Strong sensitivity to heat, low RH, fuels, wind, smoke, and distance to detected heat.
  */
-export function estimateTenDayWildfireProbabilityPercent(input: TenDayEstimateInput): number {
-  const { calibratedScore, raw, nearestFireKm, firmsHotspots } = input;
+export function computeEnvironmentalWildfireIndex(
+  raw: RawFeatures,
+  nearestFireKm: number | null,
+  firmsHotspots: number,
+): number {
+  const tempStress = clamp01((raw.tempF - 48) / 62) * 30;
+  const rhStress = clamp01((100 - raw.humidity) / 85) * 22;
+  const fuel = raw.vegetationDryness * 24;
+  const wind = Math.min(17, (raw.windMph / 48) * 17);
+  const smoke = Math.min(13, (raw.aqi / 220) * 13);
 
-  // Model index — damped so a saturated ONNX score alone rarely dominates the whole gauge
-  const indexPart = Math.min(44, Math.pow(Math.max(0, calibratedScore) / 100, 0.82) * 50);
-
-  const dryPart = raw.vegetationDryness * 20;
-  const windPart = Math.min(14, (raw.windMph / 45) * 14);
-  const smokePart = Math.min(9, (raw.aqi / 250) * 9);
-
-  let fireProximityPart = 0;
-  if (nearestFireKm != null && nearestFireKm < 240) {
-    fireProximityPart = (1 - nearestFireKm / 240) * 26;
+  let prox = 0;
+  if (nearestFireKm != null && nearestFireKm < 280) {
+    prox = (1 - nearestFireKm / 280) * 28;
   }
-  const regionalActivity = Math.min(11, Math.log1p(Math.max(0, firmsHotspots)) * 2.4);
+
+  const regional = Math.min(12, Math.log1p(Math.max(0, firmsHotspots)) * 2.5);
 
   const m = raw.month;
-  const seasonPrior = m >= 6 && m <= 10 ? 9 : m === 5 || m === 11 ? 6 : 4;
+  const season = m >= 6 && m <= 10 ? 10 : m === 5 || m === 11 ? 7 : 4;
 
-  const sum =
-    indexPart + dryPart + windPart + smokePart + fireProximityPart + regionalActivity + seasonPrior;
-  return Math.round(Math.max(0, Math.min(94, sum)));
+  const sum = tempStress + rhStress + fuel + wind + smoke + prox + regional + season;
+  return Math.min(96, sum);
+}
+
+/** Higher weight when ONNX output is outside the usual saturated band (training often clusters ~11–14). */
+function onnxBlendWeight(rawOnnxScore: number | undefined): number {
+  if (rawOnnxScore == null || !Number.isFinite(rawOnnxScore)) return 0.32;
+  if (rawOnnxScore >= 10.5 && rawOnnxScore <= 14.5) return 0.18;
+  return 0.38;
+}
+
+/**
+ * Heuristic 0–100% shown as “wildfire in the next ~10 days” in the UI.
+ * Blends ONNX with a live environmental index so the gauge is not stuck ~58–62 when the
+ * regressor output barely moves (common for mild coastal inputs on the shipped model).
+ */
+export function estimateTenDayWildfireProbabilityPercent(input: TenDayEstimateInput): number {
+  const { calibratedScore, rawOnnxScore, raw, nearestFireKm, firmsHotspots } = input;
+  const env = computeEnvironmentalWildfireIndex(raw, nearestFireKm, firmsHotspots);
+  const w = onnxBlendWeight(rawOnnxScore);
+  const blended = w * calibratedScore + (1 - w) * env;
+  return Math.round(Math.max(0, Math.min(94, blended)));
 }

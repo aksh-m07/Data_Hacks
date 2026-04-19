@@ -1,6 +1,6 @@
 /** Same-origin tab/window messaging for Wildfire → Helper (and Home) popups. */
 
-export const SHARE_CHANNEL_NAME = "disasterdocs-wildfire-share";
+export const SHARE_CHANNEL_NAME = "groundzero-wildfire-share";
 
 export type WildfireShareMessage = {
   type: "wildfire-share";
@@ -21,8 +21,8 @@ export type WildfireShareMessage = {
   lon?: number | null;
 };
 
-const STORAGE_KEY = "disasterdocs-pending-share";
-const TAB_ID_KEY = "disasterdocs-broadcast-tab-id";
+const STORAGE_KEY = "groundzero-pending-share";
+const TAB_ID_KEY = "groundzero-broadcast-tab-id";
 
 /** In-memory id when sessionStorage is blocked — must be stable for the whole page lifetime. */
 let cachedBroadcastTabId: string | null = null;
@@ -54,7 +54,7 @@ export function getOrCreateBroadcastTabId(): string {
 }
 
 /** Same-origin other tabs only (storage event does not fire in the tab that wrote). */
-export const LOCAL_STORAGE_BROADCAST_KEY = "disasterdocs-alert-broadcast-v1";
+export const LOCAL_STORAGE_BROADCAST_KEY = "groundzero-alert-broadcast-v1";
 
 export function broadcastWildfireShare(payload: {
   instructions: string;

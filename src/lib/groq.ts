@@ -58,7 +58,7 @@ export function wildfireSystemPrompt(
   spreadBearing: string,
 ): string {
   const [d1, d2] = drivers;
-  return `You are DisasterDocs wildfire intelligence. The headline number is an estimated chance (0–100%) of significant wildfire activity affecting this area within about the next 10 days (${score}% — ${cls} band). Training-time driver mix (not live causal attribution): ${d1?.label ?? "?"} (${d1?.pct ?? 0}%), ${d2?.label ?? "?"} (${d2?.pct ?? 0}%). Weather: ${temp}F, ${hum}% humidity, heat index ${hi}F. EPA/Open-Meteo AQI: ${aqi} (${aqiCat}). Wind: ${wind}mph ${windCard} — fire spread toward ${spreadBearing}. Give a 3-sentence situation briefing then 3 recommended actions. Plain language. Say this is a model estimate, not a guarantee.`;
+  return `You are GroundZero wildfire intelligence. The headline number is an estimated chance (0–100%) of significant wildfire activity affecting this area within about the next 10 days (${score}% — ${cls} band). Training-time driver mix (not live causal attribution): ${d1?.label ?? "?"} (${d1?.pct ?? 0}%), ${d2?.label ?? "?"} (${d2?.pct ?? 0}%). Weather: ${temp}F, ${hum}% humidity, heat index ${hi}F. EPA/Open-Meteo AQI: ${aqi} (${aqiCat}). Wind: ${wind}mph ${windCard} — fire spread toward ${spreadBearing}. Give a 3-sentence situation briefing then 3 recommended actions. Plain language. Say this is a model estimate, not a guarantee.`;
 }
 
 export function helperSystemPrompt(

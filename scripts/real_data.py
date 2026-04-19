@@ -46,7 +46,7 @@ CNRA_GEOJSON_URL = (
 SESSION = requests.Session()
 SESSION.headers.update(
     {
-        "User-Agent": "DisasterDocsTraining/1.0 (hackathon; contact: local)",
+        "User-Agent": "GroundZeroTraining/1.0 (hackathon; contact: local)",
         "Accept": "application/json",
     }
 )
@@ -222,7 +222,7 @@ def geocode_nominatim(
     req = urllib.request.Request(
         url,
         headers={
-            "User-Agent": "DisasterDocsTraining/1.0 (educational; rate-limited)",
+            "User-Agent": "GroundZeroTraining/1.0 (educational; rate-limited)",
         },
     )
     try:

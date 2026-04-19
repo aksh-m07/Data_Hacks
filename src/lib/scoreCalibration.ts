@@ -1,7 +1,7 @@
 /**
- * ONNX regressor outputs are often single digits for mild coastal weather (e.g. San Diego),
- * which would otherwise show as ~12/100 after a weak stretch. Map monotonically to a clearer
- * 0–100 risk index — not a literal “probability %” of fire.
+ * ONNX regressor outputs often cluster (~11–14 raw → ~52–63 calibrated) for similar coastal
+ * conditions — that is the model, not a bug. The headline gauge uses tenDayWildfireProbability.ts
+ * to blend this with live environmental stress so the UI is not stuck in a narrow band.
  *
  * rawScore = model output before this step; debug panel shows raw unchanged.
  */

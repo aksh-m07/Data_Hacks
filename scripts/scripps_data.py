@@ -182,7 +182,7 @@ def _load_from_http(url: str) -> pd.DataFrame:
     try:
         resp = requests.get(
             url, timeout=60,
-            headers={"User-Agent": "DisasterDocsTraining/1.0"},
+            headers={"User-Agent": "GroundZeroTraining/1.0"},
         )
         resp.raise_for_status()
         raw = resp.content

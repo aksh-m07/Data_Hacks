@@ -10,7 +10,7 @@ targets:
       - path: PulseCamBridge
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.datahacks.pulsecambridge
+        PRODUCT_BUNDLE_IDENTIFIER: com.groundzero.pulsecambridge
         SWIFT_VERSION: 5.0
         TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
@@ -20,6 +20,6 @@ targets:
         INFOPLIST_KEY_NSAppTransportSecurity:
           NSAllowsArbitraryLoads: YES
         INFOPLIST_KEY_CFBundleURLTypes:
-          - CFBundleURLName: com.datahacks.pulsecambridge
+          - CFBundleURLName: com.groundzero.pulsecambridge
             CFBundleURLSchemes:
-              - disasterdocs-pulse
+              - groundzero-pulse

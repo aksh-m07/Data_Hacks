@@ -40,3 +40,33 @@ export async function searchPlaces(query: string): Promise<GeocodeHit[]> {
     };
   });
 }
+
+/** Browser-friendly reverse geocode (coordinates → place name). No API key. */
+export async function reverseGeocodePlaceName(lat: number, lon: number): Promise<string | null> {
+  try {
+    const u = new URL("https://api.bigdatacloud.net/data/reverse-geocode-client");
+    u.searchParams.set("latitude", String(lat));
+    u.searchParams.set("longitude", String(lon));
+    u.searchParams.set("localityLanguage", "en");
+    const r = await fetch(u.toString());
+    if (!r.ok) return null;
+    const j = (await r.json()) as {
+      locality?: string;
+      city?: string;
+      principalSubdivision?: string;
+      countryName?: string;
+    };
+    const place = j.locality?.trim() || j.city?.trim();
+    const parts = [place, j.principalSubdivision, j.countryName].filter(
+      (x): x is string => typeof x === "string" && x.trim().length > 0,
+    );
+    if (parts.length === 0) return null;
+    const deduped: string[] = [];
+    for (const p of parts) {
+      if (!deduped.some((d) => d.toLowerCase() === p.toLowerCase())) deduped.push(p);
+    }
+    return deduped.join(", ");
+  } catch {
+    return null;
+  }
+}

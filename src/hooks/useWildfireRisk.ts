@@ -12,7 +12,10 @@ import { groqBriefing, wildfireSystemPrompt } from "../lib/groq";
 import { stableLocationKey } from "../lib/locationKey";
 import { downwindBearingCardinal, windFromCardinal } from "../lib/osrm";
 import { loadFeatureImportances, predictRisk } from "../lib/riskInference";
-import { estimateTenDayWildfireProbabilityPercent } from "../lib/tenDayWildfireProbability";
+import {
+  computeEnvironmentalWildfireIndex,
+  estimateTenDayWildfireProbabilityPercent,
+} from "../lib/tenDayWildfireProbability";
 
 /** Auto refresh cadence (fixed interval; skips a tick if the previous fetch is still running). */
 export const WILDFIRE_AUTO_REFRESH_MS = 5 * 60 * 1000;
@@ -29,6 +32,8 @@ export type RiskInspect = {
   features: number[];
   rawScore: number;
   outputDims: number[];
+  /** Same inputs as headline % — for ?debug=risk. */
+  environmentalIndex: number;
 };
 
 export type WildfireState = {
@@ -104,8 +109,10 @@ export function useWildfireRisk(lat: number | null, lon: number | null) {
       const vec = toModelInput(raw);
       const { score, error: infErr, rawScore, outputDims } = await predictRisk(vec);
       if (infErr) throw new Error(infErr);
+      const environmentalIndex = computeEnvironmentalWildfireIndex(raw, nearestFireKm, firmsHotspots);
       const tenDayWildfirePct = estimateTenDayWildfireProbabilityPercent({
         calibratedScore: score,
+        rawOnnxScore: rawScore,
         raw,
         nearestFireKm,
         firmsHotspots,
@@ -167,6 +174,7 @@ export function useWildfireRisk(lat: number | null, lon: number | null) {
           features: Array.from(vec),
           rawScore,
           outputDims,
+          environmentalIndex,
         },
       }));
     } catch (e) {

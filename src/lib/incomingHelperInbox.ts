@@ -1,6 +1,6 @@
 import type { WildfireShareMessage } from "./crossDashboardShare";
 
-const STORAGE_KEY = "disasterdocs-helper-inbox-v1";
+const STORAGE_KEY = "groundzero-helper-inbox-v1";
 const MAX_ROWS = 50;
 
 export type HelperInboxRow = {

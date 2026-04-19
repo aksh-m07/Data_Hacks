@@ -117,7 +117,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = XWL8J2LXT8;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleURLTypes = "[[\"CFBundleURLSchemes\": [\"disasterdocs-pulse\"], \"CFBundleURLName\": \"com.datahacks.pulsecambridge\"]]";
+				INFOPLIST_KEY_CFBundleURLTypes = "[[\"CFBundleURLSchemes\": [\"groundzero-pulse\"], \"CFBundleURLName\": \"com.groundzero.pulsecambridge\"]]";
 				INFOPLIST_KEY_NSAppTransportSecurity = "[\"NSAllowsArbitraryLoads\": true]";
 				INFOPLIST_KEY_NSMainCameraUsageDescription = "Needed to measure pulse using rear camera and flashlight.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Not used.";
@@ -128,7 +128,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.datahacks.pulsecambridge;
+				PRODUCT_BUNDLE_IDENTIFIER = com.groundzero.pulsecambridge;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -204,7 +204,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = XWL8J2LXT8;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleURLTypes = "[[\"CFBundleURLSchemes\": [\"disasterdocs-pulse\"], \"CFBundleURLName\": \"com.datahacks.pulsecambridge\"]]";
+				INFOPLIST_KEY_CFBundleURLTypes = "[[\"CFBundleURLSchemes\": [\"groundzero-pulse\"], \"CFBundleURLName\": \"com.groundzero.pulsecambridge\"]]";
 				INFOPLIST_KEY_NSAppTransportSecurity = "[\"NSAllowsArbitraryLoads\": true]";
 				INFOPLIST_KEY_NSMainCameraUsageDescription = "Needed to measure pulse using rear camera and flashlight.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Not used.";
@@ -215,7 +215,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.datahacks.pulsecambridge;
+				PRODUCT_BUNDLE_IDENTIFIER = com.groundzero.pulsecambridge;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;

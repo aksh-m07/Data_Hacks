@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useBreathing } from "../hooks/useBreathing";
 import { useBreathingLandmarks } from "../hooks/useBreathingLandmarks";
 import { usePersonDetection } from "../hooks/usePersonDetection";
@@ -9,11 +9,16 @@ import { useWebcamStream } from "../hooks/useWebcamStream";
 import { isWildfireModelInRange } from "../lib/wildfireCalibration";
 import { broadcastWildfireShare } from "../lib/crossDashboardShare";
 import { appendInboxAlertIfNew } from "../lib/incomingHelperInbox";
+import { setLiveMapLocation } from "../lib/liveMapLocation";
 import type { SurvivorLiveSnapshot } from "../lib/wildfireCivilianProtocol";
+import { SmokeAlarmListener } from "./SmokeAlarmListener";
 import { SurvivorWildfireProtocolPanel } from "./SurvivorWildfireProtocolPanel";
 
 type Props = {
   onInboxRefresh: () => void;
+  onSmokeAlarm: () => void;
+  /** True while a detected alarm is pending (clears after Wildfire shows the toast window). */
+  smokeAlarmActive: boolean;
 };
 
 /** Hide benign Chrome camera race + help-link noise from the UI */
@@ -26,11 +31,17 @@ function formatSurvivorCameraError(raw: string | undefined): string | null {
 }
 
 /** Survivor: webcam person detection + rPPG heartbeat; station broadcasts; one-tap distress (people count only) to Wildfire. */
-export function SurvivorDashboard({ onInboxRefresh }: Props) {
+export function SurvivorDashboard({ onInboxRefresh, onSmokeAlarm, smokeAlarmActive }: Props) {
   const loc = useWildfireLocation();
   const wf = useWildfireRisk(loc.lat, loc.lon);
 
-  const { videoRef, error: camErr, ready } = useWebcamStream("user");
+  useEffect(() => {
+    setLiveMapLocation(loc.lat, loc.lon, loc.placeLabel);
+  }, [loc.lat, loc.lon, loc.placeLabel]);
+
+  const { videoRef, error: camErr, ready, mediaStream } = useWebcamStream("user", {
+    withAudio: true,
+  });
   const {
     persons,
     personCount,
@@ -143,7 +154,6 @@ export function SurvivorDashboard({ onInboxRefresh }: Props) {
         <div className="survivor-head-grid">
           <div className="survivor-head-main">
             <h1>Survivor</h1>
-            <p className="badge">Check-in · Vision · Distress</p>
             <p className="survivor-head-copy">
               This view uses webcam person detection and breathing trend only. No heart-rate claim is shown here to
               avoid false precision.
@@ -173,6 +183,13 @@ export function SurvivorDashboard({ onInboxRefresh }: Props) {
                 <span className="survivor-head-kpi-label">Signal</span>
                 <strong>{signalQuality}</strong>
               </div>
+            </div>
+            <div className="survivor-head-alarm-listen">
+              <SmokeAlarmListener
+                mediaStream={mediaStream}
+                onAlarm={onSmokeAlarm}
+                alarmActive={smokeAlarmActive}
+              />
             </div>
           </section>
         </div>

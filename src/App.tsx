@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SharedWildfirePopup } from "./components/SharedWildfirePopup";
-import { SmokeAlarmListener } from "./components/SmokeAlarmListener";
 import { SurvivorDashboard } from "./components/SurvivorDashboard";
 import { WildfireDashboard } from "./components/WildfireDashboard";
 import type { WildfireShareMessage } from "./lib/crossDashboardShare";
@@ -12,6 +11,8 @@ import {
   peekPendingShareFromStorage,
 } from "./lib/crossDashboardShare";
 import { appendInboxAlertIfNew, getHelperInboxRows } from "./lib/incomingHelperInbox";
+
+const SMOKE_ALARM_BC = "groundzero-smoke-alarm-v1";
 
 /** Only two workspaces: Wildfire station vs Survivor. */
 export type AppMode = "wildfire" | "survivor";
@@ -41,7 +42,8 @@ export function shouldShowSharePopup(
 
 export default function App() {
   const [mode, setMode] = useState<AppMode>("wildfire");
-  const [alarmFlash, setAlarmFlash] = useState(false);
+  /** Set when Survivor mic detects a tone; cleared after 7s on Wildfire station (stays pending if user stays on Survivor). */
+  const [smokeAlarmPending, setSmokeAlarmPending] = useState(false);
   const [sharePopup, setSharePopup] = useState<WildfireShareMessage | null>(null);
   const [helperInboxTick, setHelperInboxTick] = useState(0);
   const modeRef = useRef(mode);
@@ -52,10 +54,45 @@ export default function App() {
     localTabIdRef.current = getOrCreateBroadcastTabId();
   }
 
-  const onAlarm = useCallback(() => {
-    setAlarmFlash(true);
-    window.setTimeout(() => setAlarmFlash(false), 4000);
+  const onSmokeAlarm = useCallback(() => {
+    setSmokeAlarmPending(true);
+    try {
+      const bc = new BroadcastChannel(SMOKE_ALARM_BC);
+      bc.postMessage("fire");
+      bc.close();
+    } catch {
+      /* */
+    }
   }, []);
+
+  useEffect(() => {
+    let bc: BroadcastChannel | null = null;
+    try {
+      bc = new BroadcastChannel(SMOKE_ALARM_BC);
+      bc.onmessage = (ev: MessageEvent<string>) => {
+        if (ev.data === "fire") setSmokeAlarmPending(true);
+        if (ev.data === "clear") setSmokeAlarmPending(false);
+      };
+    } catch {
+      /* */
+    }
+    return () => bc?.close();
+  }, []);
+
+  useEffect(() => {
+    if (!smokeAlarmPending || mode !== "wildfire") return;
+    const id = window.setTimeout(() => {
+      setSmokeAlarmPending(false);
+      try {
+        const bc = new BroadcastChannel(SMOKE_ALARM_BC);
+        bc.postMessage("clear");
+        bc.close();
+      } catch {
+        /* */
+      }
+    }, 7000);
+    return () => window.clearTimeout(id);
+  }, [smokeAlarmPending, mode]);
 
   const showShare = useCallback((msg: WildfireShareMessage) => {
     const id = `${msg.ts}:${msg.alertSource ?? "wildfire"}`;
@@ -146,11 +183,7 @@ export default function App() {
       <header className="app-header">
         <div className="app-header-inner">
           <div className="app-brand">
-            <span className="app-brand-mark" aria-hidden />
-            <div>
-              <span className="app-brand-title">DisasterDocs</span>
-              <span className="app-brand-sub">DataHacks 2026 · DS3 UCSD</span>
-            </div>
+            <span className="app-brand-title">GroundZero</span>
           </div>
           <nav className="app-nav" aria-label="Main">
             <button
@@ -168,17 +201,8 @@ export default function App() {
               Survivor
             </button>
           </nav>
-          <div className="app-header-tools">
-            <SmokeAlarmListener onAlarm={onAlarm} />
-          </div>
         </div>
       </header>
-
-      {alarmFlash ? (
-        <div className="alarm-toast" role="status">
-          Possible smoke-alarm tone — seek fresh air and check the briefing.
-        </div>
-      ) : null}
 
       {sharePopup && shouldShowSharePopup(mode, sharePopup, localTabIdRef.current) ? (
         <SharedWildfirePopup message={sharePopup} onDismiss={dismissShare} />
@@ -189,10 +213,15 @@ export default function App() {
           <WildfireDashboard
             survivorDistressRows={helperInboxRows.filter((r) => r.source === "survivor")}
             onInboxRefresh={() => setHelperInboxTick((t) => t + 1)}
+            smokeAlarmVisible={smokeAlarmPending}
           />
         ) : null}
         {mode === "survivor" ? (
-          <SurvivorDashboard onInboxRefresh={() => setHelperInboxTick((t) => t + 1)} />
+          <SurvivorDashboard
+            onInboxRefresh={() => setHelperInboxTick((t) => t + 1)}
+            onSmokeAlarm={onSmokeAlarm}
+            smokeAlarmActive={smokeAlarmPending}
+          />
         ) : null}
       </main>
     </div>

@@ -5,10 +5,12 @@ import { useWildfireRisk } from "../hooks/useWildfireRisk";
 import { useWildfireLocation } from "../hooks/useWildfireLocation";
 import { broadcastWildfireShare } from "../lib/crossDashboardShare";
 import { removeInboxRowById } from "../lib/incomingHelperInbox";
+import { setLiveMapLocation } from "../lib/liveMapLocation";
 import { searchPlaces, type GeocodeHit } from "../lib/geocode";
 import { FEATURE_LABELS } from "../lib/features";
 import type { HelperInboxRow } from "../lib/incomingHelperInbox";
 import { isWildfireModelInRange } from "../lib/wildfireCalibration";
+import { AlarmLocationPanel } from "./AlarmLocationPanel";
 import { LandmarkGlyph } from "./LandmarkGlyph";
 import { SpreadMap } from "./SpreadMap";
 
@@ -16,11 +18,17 @@ type Props = {
   /** Distress calls from the Survivor dashboard (same browser inbox). */
   survivorDistressRows: HelperInboxRow[];
   onInboxRefresh: () => void;
+  /** Smoke tone was detected on Survivor; full-screen alert on the station view only. */
+  smokeAlarmVisible: boolean;
 };
 
-export function WildfireDashboard({ survivorDistressRows, onInboxRefresh }: Props) {
+export function WildfireDashboard({ survivorDistressRows, onInboxRefresh, smokeAlarmVisible }: Props) {
   const loc = useWildfireLocation();
   const wf = useWildfireRisk(loc.lat, loc.lon);
+
+  useEffect(() => {
+    setLiveMapLocation(loc.lat, loc.lon, loc.placeLabel);
+  }, [loc.lat, loc.lon, loc.placeLabel]);
   const cd = useCountdown(wf.nextRefreshAt || Date.now());
 
   const [q, setQ] = useState("");
@@ -127,6 +135,21 @@ export function WildfireDashboard({ survivorDistressRows, onInboxRefresh }: Prop
 
   return (
     <div className={`dashboard wf-page ${borderClass}`}>
+      {smokeAlarmVisible ? (
+        <>
+          <div className="alarm-toast-backdrop" aria-hidden />
+          <div className="alarm-toast" role="alert">
+            <p className="alarm-toast-title">Smoke-alarm tone detected</p>
+            <AlarmLocationPanel
+              lat={lat}
+              lon={lon}
+              placeLabel={loc.placeLabel}
+              geoErr={loc.geoErr}
+            />
+          </div>
+        </>
+      ) : null}
+
       <header className="page-head wf-station-head">
         <div className="wf-station-head-title-row">
           <h1>Wildfire station</h1>
@@ -215,9 +238,10 @@ export function WildfireDashboard({ survivorDistressRows, onInboxRefresh }: Prop
             <section className="risk-debug" aria-label="Risk model verification">
               <h2 className="risk-debug-title">Verification (?debug=risk)</h2>
               <p className="risk-debug-lede">
-                The headline <strong>~10-day wildfire %</strong> comes from{" "}
-                <code>tenDayWildfireProbability.ts</code>. The ONNX row below is the underlying regressor index (
-                <code>scoreCalibration.ts</code>) before that blend.
+                The headline <strong>~10-day wildfire %</strong> blends a live{" "}
+                <strong>environmental index</strong> (temp, RH, fuels, wind, smoke, fire proximity) with the ONNX
+                regressor. When raw ONNX sits in a narrow band (~11–14), the ML term is down-weighted so the gauge
+                reflects weather instead of sticking near ~58–62.
               </p>
               <dl className="risk-debug-dl">
                 <dt>~10-day wildfire % (headline)</dt>
@@ -225,7 +249,12 @@ export function WildfireDashboard({ survivorDistressRows, onInboxRefresh }: Prop
                   <code>{Math.round(wf.tenDayWildfirePct)}</code> — class{" "}
                   <code>{wf.cls}</code>
                 </dd>
-                <dt>Raw ONNX → calibrated index (not the headline)</dt>
+                <dt>Environmental index (live inputs only)</dt>
+                <dd>
+                  <code>{Math.round(wf.riskInspect.environmentalIndex)}</code> (
+                  <code>computeEnvironmentalWildfireIndex</code>)
+                </dd>
+                <dt>Raw ONNX → calibrated index (partial input to headline)</dt>
                 <dd>
                   <code>{wf.riskInspect.rawScore.toFixed(6)}</code> → {Math.round(wf.score)} (
                   <code>scoreCalibration.ts</code>)
@@ -357,7 +386,7 @@ export function WildfireDashboard({ survivorDistressRows, onInboxRefresh }: Prop
         className="wf-survivor-inbox wf-survivor-inbox--bottom"
         aria-label="Survivor distress calls"
       >
-        <h2 className="wf-survivor-inbox-title">Distress calls (from Survivor)</h2>
+        <h2 className="wf-survivor-inbox-title">Distress calls</h2>
         <p className="wf-survivor-inbox-lede">
           Rows come from <strong>Send distress call</strong> on the Survivor dashboard in this browser.{" "}
           <strong>Remove</strong> clears this device only.

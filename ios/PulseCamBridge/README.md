@@ -4,7 +4,7 @@ Native iPhone app scaffold for finger-on-rear-camera pulse measurement (PPG), th
 
 ## What it does
 
-- Handles deep links like `disasterdocs-pulse://measure?session=<session_id>`
+- Handles deep links like `groundzero-pulse://measure?session=<session_id>`
 - Uses rear camera + torch for PPG sampling
 - Estimates BPM on-device
 - Posts result to the pulse bridge API:

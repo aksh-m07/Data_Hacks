@@ -1,4 +1,4 @@
-# Data_Hacks
+# GroundZero
 
 ## iPhone Pulse Bridge (new)
 
@@ -39,7 +39,7 @@ iPhone app scaffold is in:
 
 It supports deep links like:
 
-- `disasterdocs-pulse://measure?session=<session_id>`
+- `groundzero-pulse://measure?session=<session_id>`
 
 and posts BPM to:
 

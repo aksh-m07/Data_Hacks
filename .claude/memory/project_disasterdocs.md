@@ -1,12 +1,12 @@
 ---
-name: DisasterDocs project state
-description: DataHacks 2026 project — two-dashboard wildfire + helper app, current implementation status
+name: GroundZero project state
+description: Two-dashboard wildfire + helper app — current implementation status
 type: project
 ---
 
-Two-dashboard PWA for DataHacks 2026 (DS3 UCSD). Vite + React + TypeScript.
+Two-dashboard PWA (GroundZero). Vite + React + TypeScript.
 
-**Why:** Competition submission covering UI/UX, ML/AI, and Scripps Challenge ($1,500) tracks.
+**Why:** Wildfire intelligence and survivor tooling (UI/UX, ML/AI, and data integrations).
 
 **How to apply:** Check this before starting any session to know what's built vs. missing.
 

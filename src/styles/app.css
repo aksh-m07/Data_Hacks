@@ -107,7 +107,9 @@ select {
 .app-header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  /* Above Leaflet panes/controls (~400–1000); below alarm/share overlays (~10k). */
+  z-index: 5000;
+  flex-shrink: 0;
   border-bottom: 1px solid var(--border);
   background: rgba(10, 11, 15, 0.85);
   backdrop-filter: blur(12px);
@@ -130,27 +132,12 @@ select {
   gap: 0.65rem;
 }
 
-.app-brand-mark {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--orange), #c2410c);
-  box-shadow: 0 0 24px rgba(251, 146, 60, 0.35);
-}
-
 .app-brand-title {
   display: block;
   font-weight: 800;
   font-size: 1.05rem;
   letter-spacing: -0.03em;
   line-height: 1.2;
-}
-
-.app-brand-sub {
-  display: block;
-  font-size: 0.68rem;
-  color: var(--muted);
-  margin-top: 0.1rem;
 }
 
 .app-nav {
@@ -200,6 +187,7 @@ select {
 
 .smoke-indicator {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.45rem;
   padding: 0.35rem 0.75rem;
@@ -208,6 +196,20 @@ select {
   background: var(--surface);
   font-size: 0.72rem;
   color: var(--orange);
+  max-width: 100%;
+}
+
+.smoke-mic-hint {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.65rem;
+  line-height: 1.35;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.smoke-indicator--alarm .smoke-mic-hint {
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .smoke-indicator .smoke-label {
@@ -230,20 +232,114 @@ select {
   animation: pulse 1.2s ease-in-out infinite;
 }
 
+.smoke-indicator--alarm {
+  color: #fecaca;
+  border-color: rgba(248, 113, 113, 0.95);
+  background: linear-gradient(135deg, rgba(127, 29, 29, 0.98), rgba(185, 28, 28, 0.95));
+  animation: alarm-header-beat 0.85s ease-in-out infinite;
+  box-shadow:
+    0 0 0 1px rgba(254, 202, 202, 0.35),
+    0 0 18px rgba(239, 68, 68, 0.55);
+}
+
+.smoke-indicator--alarm .smoke-label {
+  color: #fff;
+  font-weight: 700;
+}
+
+.smoke-indicator--alarm .pulse {
+  background: #fff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+}
+
+.smoke-indicator--alarm .smoke-level {
+  background: #fecaca;
+}
+
+@keyframes alarm-header-beat {
+  0%,
+  100% {
+    filter: brightness(1);
+    box-shadow:
+      0 0 0 1px rgba(254, 202, 202, 0.35),
+      0 0 14px rgba(239, 68, 68, 0.45);
+  }
+  50% {
+    filter: brightness(1.12);
+    box-shadow:
+      0 0 0 1px rgba(254, 202, 202, 0.55),
+      0 0 28px rgba(239, 68, 68, 0.85);
+  }
+}
+
+.alarm-toast-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
 .alarm-toast {
   position: fixed;
-  top: env(safe-area-inset-top, 12px);
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   z-index: 9999;
-  max-width: 22rem;
-  padding: 12px 16px;
-  border-radius: var(--radius);
-  background: rgba(220, 38, 38, 0.95);
+  max-width: min(24rem, calc(100vw - 1.5rem));
+  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+  background: rgba(185, 28, 28, 0.97);
   color: #fff;
-  font-size: 0.875rem;
+  font-size: 0.84rem;
   text-align: center;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(254, 202, 202, 0.35);
+}
+
+.alarm-toast-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.alarm-toast-location {
+  margin: 0.35rem 0 0.65rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.2);
+  text-align: left;
+}
+
+.alarm-toast-place {
+  margin: 0 0 0.35rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.alarm-toast-coords {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+.alarm-toast-coords-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+  margin-bottom: 0.15rem;
+}
+
+.alarm-toast-coords--muted {
+  font-family: inherit;
+  font-size: 0.78rem;
+  opacity: 0.92;
 }
 
 .mode-title {
@@ -2200,6 +2296,12 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--muted);
+}
+
+.survivor-head-alarm-listen {
+  margin-top: 0.65rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line-soft);
 }
 
 @media (min-width: 960px) {
