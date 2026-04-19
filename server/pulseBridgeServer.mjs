@@ -124,7 +124,7 @@ createServer(async (req, res) => {
 <body style="font-family: -apple-system, sans-serif; margin: 24px;">
   <h2>Pulse Bridge</h2>
   <p>Session: <code>${sessionId || "missing"}</code></p>
-  <p>Use the iOS app for camera-based measurement. This page is a fallback to submit BPM manually.</p>
+  <p>Enter a pulse reading from a trusted device (watch, oximeter, etc.), or a rough manual count.</p>
   <form id="f">
     <input id="bpm" type="number" min="25" max="240" placeholder="BPM" style="font-size:16px;padding:8px;">
     <button type="submit" style="font-size:16px;padding:8px 12px;">Send</button>
