@@ -1,0 +1,11 @@
+{
+  "n_samples": 437,
+  "sources": [
+    "NOAA NCEI Storm Events (California Wildfire)",
+    "CNRA GIS CAL FIRE / NIFC perimeters",
+    "Open-Meteo Historical Weather + Air Quality",
+    "OpenStreetMap Nominatim (geocoding)"
+  ],
+  "max_noaa_geocode": 50,
+  "neg_samples": 400
+}

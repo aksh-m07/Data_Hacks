@@ -1,0 +1,30 @@
+{
+  "name": "disasterdocs",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "export-model": "python3 -m venv .venv && .venv/bin/pip install -q -r scripts/requirements.txt && .venv/bin/pip install -q packaging && .venv/bin/python scripts/export_onnx.py",
+    "export-model:scripps": "python3 -m venv .venv && .venv/bin/pip install -q -r scripts/requirements.txt && .venv/bin/pip install -q packaging && .venv/bin/python scripts/export_onnx.py"
+  },
+  "dependencies": {
+    "@tensorflow-models/coco-ssd": "^2.2.3",
+    "@tensorflow/tfjs": "^4.22.0",
+    "leaflet": "^1.9.4",
+    "onnxruntime-web": "^1.20.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-leaflet": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.15",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "~5.7.2",
+    "vite": "^6.0.1"
+  }
+}
