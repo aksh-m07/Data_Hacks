@@ -1,0 +1,322 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		07BC8850BD50ABE4736EF0B6 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0012570396F17BC7C818F2BC /* AppState.swift */; };
+		124CDD2D893A1AAC351221EA /* BridgeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D19468639F3EB6E8856BCB8 /* BridgeAPI.swift */; };
+		26A3B7708E749B579A4A9DE0 /* PulseCameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ABDCC285E68EE9A4DEF57A2 /* PulseCameraManager.swift */; };
+		2A2A7BF4F6CEC23474626D4A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B03DC5D30E79B8B5C6EB343 /* ContentView.swift */; };
+		987FFF0952198D547ED8BBA2 /* PulseCamBridgeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E3A6FE1DFD4BECC9C21E80 /* PulseCamBridgeApp.swift */; };
+		F8E39EA9ACC5E91103E5B409 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B87ACABAA17F25AD8AE03DB /* CameraPreview.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0012570396F17BC7C818F2BC /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		0B87ACABAA17F25AD8AE03DB /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
+		206FDEE0515635286C66B800 /* PulseCamBridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PulseCamBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B03DC5D30E79B8B5C6EB343 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		6ABDCC285E68EE9A4DEF57A2 /* PulseCameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulseCameraManager.swift; sourceTree = "<group>"; };
+		8D19468639F3EB6E8856BCB8 /* BridgeAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeAPI.swift; sourceTree = "<group>"; };
+		F5E3A6FE1DFD4BECC9C21E80 /* PulseCamBridgeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulseCamBridgeApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0D994D0C6AEEFB98D8A0647D /* Pulse */ = {
+			isa = PBXGroup;
+			children = (
+				8D19468639F3EB6E8856BCB8 /* BridgeAPI.swift */,
+				0B87ACABAA17F25AD8AE03DB /* CameraPreview.swift */,
+				6ABDCC285E68EE9A4DEF57A2 /* PulseCameraManager.swift */,
+			);
+			path = Pulse;
+			sourceTree = "<group>";
+		};
+		527F118CEC7797AE692E1F19 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				206FDEE0515635286C66B800 /* PulseCamBridge.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5E169AF03E55B6AC6944447C = {
+			isa = PBXGroup;
+			children = (
+				B72E042F99F179AE574CC5D8 /* PulseCamBridge */,
+				527F118CEC7797AE692E1F19 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B72E042F99F179AE574CC5D8 /* PulseCamBridge */ = {
+			isa = PBXGroup;
+			children = (
+				0012570396F17BC7C818F2BC /* AppState.swift */,
+				5B03DC5D30E79B8B5C6EB343 /* ContentView.swift */,
+				F5E3A6FE1DFD4BECC9C21E80 /* PulseCamBridgeApp.swift */,
+				0D994D0C6AEEFB98D8A0647D /* Pulse */,
+			);
+			path = PulseCamBridge;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		99A3D50293223AEAA918E63B /* PulseCamBridge */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 64C42B3290AFD373DA47FFD6 /* Build configuration list for PBXNativeTarget "PulseCamBridge" */;
+			buildPhases = (
+				1FD3DBE1FA9BB01D92D3B165 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PulseCamBridge;
+			packageProductDependencies = (
+			);
+			productName = PulseCamBridge;
+			productReference = 206FDEE0515635286C66B800 /* PulseCamBridge.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6CB89D4D864665C592F4E0DC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = 2C4C6435E0FE2CC51B527A9A /* Build configuration list for PBXProject "PulseCamBridge" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 5E169AF03E55B6AC6944447C;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 527F118CEC7797AE692E1F19 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				99A3D50293223AEAA918E63B /* PulseCamBridge */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1FD3DBE1FA9BB01D92D3B165 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07BC8850BD50ABE4736EF0B6 /* AppState.swift in Sources */,
+				124CDD2D893A1AAC351221EA /* BridgeAPI.swift in Sources */,
+				F8E39EA9ACC5E91103E5B409 /* CameraPreview.swift in Sources */,
+				2A2A7BF4F6CEC23474626D4A /* ContentView.swift in Sources */,
+				987FFF0952198D547ED8BBA2 /* PulseCamBridgeApp.swift in Sources */,
+				26A3B7708E749B579A4A9DE0 /* PulseCameraManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		517C3970316BE92FC8470C12 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = XWL8J2LXT8;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleURLTypes = "[[\"CFBundleURLSchemes\": [\"disasterdocs-pulse\"], \"CFBundleURLName\": \"com.datahacks.pulsecambridge\"]]";
+				INFOPLIST_KEY_NSAppTransportSecurity = "[\"NSAllowsArbitraryLoads\": true]";
+				INFOPLIST_KEY_NSMainCameraUsageDescription = "Needed to measure pulse using rear camera and flashlight.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Not used.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.datahacks.pulsecambridge;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		5B480D9A4A018885BEB5F32A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		6DF4632B97F34F6717EE609D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = XWL8J2LXT8;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleURLTypes = "[[\"CFBundleURLSchemes\": [\"disasterdocs-pulse\"], \"CFBundleURLName\": \"com.datahacks.pulsecambridge\"]]";
+				INFOPLIST_KEY_NSAppTransportSecurity = "[\"NSAllowsArbitraryLoads\": true]";
+				INFOPLIST_KEY_NSMainCameraUsageDescription = "Needed to measure pulse using rear camera and flashlight.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Not used.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.datahacks.pulsecambridge;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		9702A3C28D60FD96135E78E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2C4C6435E0FE2CC51B527A9A /* Build configuration list for PBXProject "PulseCamBridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5B480D9A4A018885BEB5F32A /* Debug */,
+				9702A3C28D60FD96135E78E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		64C42B3290AFD373DA47FFD6 /* Build configuration list for PBXNativeTarget "PulseCamBridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				517C3970316BE92FC8470C12 /* Debug */,
+				6DF4632B97F34F6717EE609D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6CB89D4D864665C592F4E0DC /* Project object */;
+}

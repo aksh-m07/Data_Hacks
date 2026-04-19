@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "pulse-bridge": "node server/pulseBridgeServer.mjs",
     "export-model": "python3 -m venv .venv && .venv/bin/pip install -q -r scripts/requirements.txt && .venv/bin/pip install -q packaging && .venv/bin/python scripts/export_onnx.py",
     "export-model:scripps": "python3 -m venv .venv && .venv/bin/pip install -q -r scripts/requirements.txt && .venv/bin/pip install -q packaging && .venv/bin/python scripts/export_onnx.py"
   },

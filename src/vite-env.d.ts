@@ -4,6 +4,7 @@ interface ImportMetaEnv {
   readonly VITE_AIRNOW_API_KEY?: string;
   readonly VITE_GROQ_API_KEY?: string;
   readonly VITE_SCRIPPS_CSV_URL?: string;
+  readonly VITE_PULSE_BRIDGE_URL?: string;
 }
 
 interface ImportMeta {

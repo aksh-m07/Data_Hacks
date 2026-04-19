@@ -13,7 +13,8 @@
   --ok: #4ade80;
   --radius: 12px;
   --radius-lg: 16px;
-  --font: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font: "Manrope", "Avenir Next", "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, sans-serif;
+  --font-display: "Manrope", "Avenir Next", "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, sans-serif;
   --content-max: min(1240px, 94vw);
 }
 
@@ -42,6 +43,23 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.45;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: var(--font);
 }
 
 #root {
@@ -1778,4 +1796,518 @@ body {
 .metric .muted {
   font-size: 0.72rem;
   margin-top: 0.15rem;
+}
+
+/* ---------- Modular style layer (style-only overrides) ---------- */
+:root {
+  --radius: 14px;
+  --radius-lg: 20px;
+  --line-soft: rgba(255, 255, 255, 0.1);
+  --line-soft-strong: rgba(255, 255, 255, 0.16);
+  --panel-hi: rgba(255, 255, 255, 0.06);
+  --panel-lo: rgba(255, 255, 255, 0.02);
+  --elev-1: 0 10px 30px rgba(0, 0, 0, 0.22);
+  --elev-2: 0 18px 44px rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --line-soft: rgba(17, 24, 39, 0.12);
+    --line-soft-strong: rgba(17, 24, 39, 0.2);
+    --panel-hi: rgba(255, 255, 255, 0.72);
+    --panel-lo: rgba(255, 255, 255, 0.42);
+    --elev-1: 0 12px 28px rgba(15, 23, 42, 0.08);
+    --elev-2: 0 22px 50px rgba(15, 23, 42, 0.12);
+  }
+}
+
+body {
+  background:
+    radial-gradient(1200px 700px at 8% -12%, rgba(251, 146, 60, 0.16), transparent 58%),
+    radial-gradient(900px 540px at 92% 0%, rgba(96, 165, 250, 0.12), transparent 54%),
+    linear-gradient(120deg, #080a0f, #0e1321 45%, #101624);
+  background-size: 160% 160%;
+  animation: bgShift 26s ease-in-out infinite alternate;
+}
+
+.app-root {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+}
+
+.app-root::before,
+.app-root::after {
+  content: "";
+  position: fixed;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(40px);
+  opacity: 0.5;
+}
+
+.app-root::before {
+  inset: auto auto 5% -8%;
+  width: min(34vw, 380px);
+  height: min(34vw, 380px);
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 35%, rgba(251, 146, 60, 0.34), transparent 66%);
+  animation: orbFloatA 15s ease-in-out infinite;
+}
+
+.app-root::after {
+  inset: 10% -10% auto auto;
+  width: min(36vw, 420px);
+  height: min(36vw, 420px);
+  border-radius: 999px;
+  background: radial-gradient(circle at 45% 45%, rgba(96, 165, 250, 0.32), transparent 64%);
+  animation: orbFloatB 18s ease-in-out infinite;
+}
+
+@keyframes bgShift {
+  to {
+    background-position: 100% 20%;
+  }
+}
+
+@keyframes orbFloatA {
+  50% {
+    transform: translate3d(30px, -28px, 0) scale(1.08);
+  }
+}
+
+@keyframes orbFloatB {
+  50% {
+    transform: translate3d(-24px, 24px, 0) scale(0.95);
+  }
+}
+
+/* Reusable module primitives */
+.surface-soft {
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, var(--panel-hi), var(--panel-lo));
+  box-shadow: inset 0 0 0 1px var(--line-soft), var(--elev-1);
+  backdrop-filter: blur(8px);
+}
+
+.field-soft {
+  border: 1px solid transparent;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px var(--line-soft);
+}
+
+.edge-soft {
+  border: 1px solid transparent;
+  box-shadow: inset 0 0 0 1px var(--line-soft);
+}
+
+:is(
+  .coverage-note,
+  .location-panel,
+  .groq-box,
+  .chart,
+  .hr-panel,
+  .wf-voice-panel,
+  .wf-alert-modal,
+  .wf-survivor-inbox,
+  .metric-card,
+  .safe-surface
+) {
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, var(--panel-hi), var(--panel-lo));
+  box-shadow: inset 0 0 0 1px var(--line-soft), var(--elev-1);
+  backdrop-filter: blur(8px);
+}
+
+:is(.location-input, .hr-input, .wf-voice-textarea, .wf-distress-input, .wf-distress-textarea) {
+  border: 1px solid transparent;
+  box-shadow: inset 0 0 0 1px var(--line-soft);
+  background: color-mix(in srgb, var(--surface2) 82%, transparent);
+}
+
+:is(.location-hits, .wf-inbox-table-wrap, .leaflet-map, .video-hero, .cam-wrap, .video-stack, .map-placeholder) {
+  border: 1px solid transparent;
+  box-shadow: inset 0 0 0 1px var(--line-soft);
+}
+
+:is(.btn, .chip, .back-btn, .app-nav-link) {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--line-soft);
+  transition: box-shadow 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+:is(.btn:hover, .chip:hover, .back-btn:hover, .app-nav-link:hover) {
+  box-shadow: inset 0 0 0 1px var(--line-soft-strong), 0 10px 20px rgba(0, 0, 0, 0.14);
+}
+
+.app-header {
+  border-bottom: 1px solid transparent;
+  box-shadow: inset 0 -1px 0 var(--line-soft);
+  background: color-mix(in srgb, var(--bg) 66%, transparent);
+}
+
+.page-head {
+  border-bottom: 1px solid transparent;
+  box-shadow: inset 0 -1px 0 var(--line-soft);
+}
+
+.badge {
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--orange) 35%, transparent);
+}
+
+.risk-banner {
+  border: 1px solid transparent;
+  box-shadow: inset 0 0 0 1px var(--line-soft);
+}
+
+.dash-low {
+  --status-line: rgba(34, 197, 94, 0.35);
+}
+
+.dash-mod {
+  --status-line: rgba(245, 158, 11, 0.42);
+}
+
+.dash-high {
+  --status-line: rgba(239, 68, 68, 0.52);
+}
+
+.dash-critical {
+  --status-line: rgba(168, 85, 247, 0.6);
+}
+
+.dash-oor {
+  --status-line: rgba(148, 163, 184, 0.4);
+}
+
+:is(.risk-banner, .wf-page, .wf-alert-modal) {
+  box-shadow: inset 0 0 0 1px var(--status-line, var(--line-soft)), var(--elev-1);
+}
+
+.mode-card:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 0 0 1px var(--line-soft-strong), var(--elev-2);
+}
+
+/* Borderless visual mode */
+:is(
+  .app-header,
+  .page-head,
+  .coverage-note,
+  .location-panel,
+  .groq-box,
+  .chart,
+  .hr-panel,
+  .wf-voice-panel,
+  .wf-alert-modal,
+  .wf-survivor-inbox,
+  .metric-card,
+  .safe-surface,
+  .location-hits,
+  .wf-inbox-table-wrap,
+  .leaflet-map,
+  .video-hero,
+  .cam-wrap,
+  .video-stack,
+  .map-placeholder,
+  .risk-banner,
+  .btn,
+  .chip,
+  .back-btn,
+  .app-nav-link,
+  .location-input,
+  .hr-input,
+  .wf-voice-textarea,
+  .wf-distress-input,
+  .wf-distress-textarea,
+  .banner,
+  .badge
+) {
+  border: none !important;
+  box-shadow: var(--elev-1) !important;
+}
+
+.app-header,
+.page-head {
+  box-shadow: none !important;
+}
+
+.wf-inbox-table th,
+.wf-inbox-table td,
+.location-hits li,
+.risk-debug-table th,
+.risk-debug-table td {
+  border-bottom: none !important;
+}
+
+/* Wildfire station page: no risk-colored outline */
+.wf-page {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Survivor dashboard refresh */
+.survivor-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.survivor-head {
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--surface2) 88%, transparent),
+    color-mix(in srgb, var(--surface) 72%, transparent) 58%
+  );
+  box-shadow: var(--elev-1);
+}
+
+.survivor-head-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.survivor-head-main h1 {
+  margin: 0;
+}
+
+.survivor-head-copy {
+  margin: 0.55rem 0 0;
+  max-width: 60ch;
+  line-height: 1.5;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.survivor-place-line {
+  margin: 0.6rem 0 0;
+}
+
+.survivor-head-panel {
+  padding: 0.8rem 0.9rem;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface2) 78%, transparent);
+  box-shadow: var(--elev-1);
+}
+
+.survivor-head-panel-title {
+  margin: 0;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.survivor-head-kpis {
+  margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.survivor-head-kpi {
+  padding: 0.55rem 0.6rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface) 74%, transparent);
+}
+
+.survivor-head-kpi strong {
+  display: block;
+  margin-top: 0.12rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.survivor-head-kpi-label {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+@media (min-width: 960px) {
+  .survivor-head-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+    align-items: end;
+  }
+}
+
+.survivor-cam-err {
+  margin: 0;
+}
+
+.survivor-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 980px) {
+  .survivor-shell {
+    grid-template-columns: minmax(0, 1fr) minmax(290px, 360px);
+    align-items: start;
+  }
+}
+
+.survivor-main-card,
+.survivor-side-card,
+.survivor-distress-card,
+.survivor-status-card {
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, var(--panel-hi), var(--panel-lo));
+  box-shadow: var(--elev-1);
+}
+
+.survivor-main-card {
+  padding: 1rem;
+}
+
+.survivor-main-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.survivor-live-note {
+  margin: 0;
+  font-size: 0.74rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--ok) 88%, var(--text));
+}
+
+.survivor-video-frame {
+  margin-bottom: 0.85rem;
+  background: #080a0f;
+}
+
+.survivor-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+}
+
+@media (min-width: 760px) {
+  .survivor-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.survivor-metric-card {
+  padding: 0.75rem 0.9rem;
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+}
+
+.survivor-breath-card {
+  margin-top: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface2) 70%, transparent);
+  box-shadow: var(--elev-1);
+}
+
+.survivor-help-note {
+  margin: 0.75rem 0 0;
+}
+
+.survivor-side-card {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.survivor-hr-panel {
+  margin: 0;
+  padding: 0.95rem;
+  background: color-mix(in srgb, var(--surface2) 76%, transparent);
+}
+
+.survivor-status-card {
+  padding: 0.95rem;
+}
+
+.survivor-status-label {
+  margin: 0;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.survivor-status-value {
+  margin: 0.25rem 0 0;
+  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+  font-weight: 700;
+}
+
+.survivor-status-sub {
+  margin: 0.4rem 0 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.survivor-pulse-btn {
+  width: 100%;
+  margin-top: 0.25rem;
+  border-radius: 12px;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--blue) 28%, transparent);
+}
+
+.survivor-session-row {
+  margin-top: 0.45rem;
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.survivor-session-code {
+  flex: 1;
+  display: block;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  padding: 0.45rem 0.55rem;
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+  background: color-mix(in srgb, var(--surface2) 86%, transparent);
+}
+
+.survivor-copy-btn {
+  min-height: 36px;
+  padding: 0.4rem 0.7rem;
+}
+
+.survivor-distress-card {
+  margin: 0;
+  max-width: none;
+  padding: 1rem;
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--danger) 20%, transparent),
+    color-mix(in srgb, var(--surface2) 88%, transparent) 55%
+  );
+}
+
+.survivor-distress-lede {
+  margin: 0 0 0.8rem;
+}
+
+.survivor-distress-btn {
+  width: 100%;
+  max-width: 20rem;
 }
