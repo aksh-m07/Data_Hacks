@@ -9,6 +9,7 @@ import { searchPlaces, type GeocodeHit } from "../lib/geocode";
 import { FEATURE_LABELS } from "../lib/features";
 import type { HelperInboxRow } from "../lib/incomingHelperInbox";
 import { isWildfireModelInRange } from "../lib/wildfireCalibration";
+import { LandmarkGlyph } from "./LandmarkGlyph";
 import { SpreadMap } from "./SpreadMap";
 
 type Props = {
@@ -126,24 +127,24 @@ export function WildfireDashboard({ survivorDistressRows, onInboxRefresh }: Prop
 
   return (
     <div className={`dashboard wf-page ${borderClass}`}>
-      <header className="page-head wf-page-head">
-        <div>
+      <header className="page-head wf-station-head">
+        <div className="wf-station-head-title-row">
           <h1>Wildfire station</h1>
           <p className="badge">{outOfRange ? "OUT OF RANGE" : wf.cls}</p>
-          {loc.placeLabel ? (
-            <p className="place-line">
-              <span className="place-pin" aria-hidden>
-                ◎
-              </span>
-              {loc.placeLabel}
-              {loc.isManual ? (
-                <button type="button" className="linkish" onClick={() => loc.clearManualUseGps()}>
-                  Use GPS instead
-                </button>
-              ) : null}
-            </p>
-          ) : null}
         </div>
+        {loc.placeLabel ? (
+          <p className="place-line">
+            <span className="place-pin" aria-hidden>
+              <LandmarkGlyph size={16} />
+            </span>
+            {loc.placeLabel}
+            {loc.isManual ? (
+              <button type="button" className="linkish" onClick={() => loc.clearManualUseGps()}>
+                Use GPS instead
+              </button>
+            ) : null}
+          </p>
+        ) : null}
       </header>
 
       <p className="coverage-note">
@@ -259,36 +260,6 @@ export function WildfireDashboard({ survivorDistressRows, onInboxRefresh }: Prop
             </section>
           ) : null}
 
-          <section className="why">
-            <h2>
-              {outOfRange ? "Feature mix (not a valid score here)" : "Training-time drivers (not “why 73 today”)"}
-            </h2>
-            {outOfRange ? (
-              <p className="small oor-hint">
-                Driver percentages reflect the trained model’s inputs but the headline risk number does not
-                apply outside the Western US training region.
-              </p>
-            ) : (
-              <p className="small why-footnote muted">
-                The headline <strong>~10-day %</strong> is a <strong>wildfire estimate</strong> from live conditions (
-                see footer). These <strong>three pills</strong> are a <strong>fixed training-time ranking</strong> — they{" "}
-                <strong>do not</strong> update per city. Their % only split the top three importances (sum ~100%
-                among those three); they are <strong>not</strong> the same as the headline 10-day %.
-              </p>
-            )}
-            <div className="pills">
-              {wf.drivers.map((d) => (
-                <span
-                  key={d.label}
-                  className="pill"
-                  title="Training importance among the model’s top 3 features — global snapshot, same for every location"
-                >
-                  {d.label} · {d.pct}% of top-3
-                </span>
-              ))}
-            </div>
-          </section>
-
           {wf.raw ? (
             <section className="metrics3">
               <div className="metric">
@@ -311,33 +282,6 @@ export function WildfireDashboard({ survivorDistressRows, onInboxRefresh }: Prop
                 <p className="big">{Math.round(wf.raw.windMph)} mph</p>
                 <p className="small">Spread toward {wf.spreadCardinal}</p>
               </div>
-            </section>
-          ) : null}
-
-          {wf.scrippsRef ? (
-            <section className="scripps-strip" aria-label="Scripps AWN challenge dataset">
-              <span className="scripps-strip-label">Scripps AWN</span>
-              <span className="scripps-strip-body">
-                {wf.scrippsRef.stationId} · {Math.round(wf.scrippsRef.tempF)}°F ·{" "}
-                {Math.round(wf.scrippsRef.humidity)}% RH · {Math.round(wf.scrippsRef.windMph)} mph wind ·{" "}
-                {Math.round(wf.scrippsRef.distanceKm)} km to UCSD station
-              </span>
-            </section>
-          ) : null}
-
-          {wf.firmsHotspots > 0 || wf.nearestFireKm !== null ? (
-            <section className="firms-strip">
-              <span className="firms-dot" aria-hidden>🔥</span>
-              <span>
-                NASA FIRMS (7d): <strong>{wf.firmsHotspots}</strong> active California hotspots
-                {wf.nearestFireKm !== null ? (
-                  <> · nearest <strong>{wf.nearestFireKm} km</strong> away</>
-                ) : null}
-              </span>
-            </section>
-          ) : wf.raw ? (
-            <section className="firms-strip firms-strip--none">
-              <span>NASA FIRMS: no active California hotspots in last 7 days</span>
             </section>
           ) : null}
 
@@ -367,7 +311,7 @@ export function WildfireDashboard({ survivorDistressRows, onInboxRefresh }: Prop
         </section>
 
         <section className="wf-voice-panel wf-voice-panel--wide">
-          <h2 className="wf-voice-title">Instructions for helpers (voice → text)</h2>
+          <h2 className="wf-voice-title">Instructions for helpers</h2>
           <p className="wf-voice-hint">
             Dictate or type a message, then <strong>Broadcast alert</strong>. The <strong>Survivor</strong> dashboard
             shows a popup with <strong>Read aloud</strong> — not here. Incoming distress from Survivor is listed in
@@ -431,7 +375,6 @@ export function WildfireDashboard({ survivorDistressRows, onInboxRefresh }: Prop
                   <th scope="col">Location</th>
                   <th scope="col">Coordinates</th>
                   <th scope="col">People scanned</th>
-                  <th scope="col">Message</th>
                   <th scope="col">Risk / context</th>
                   <th scope="col">Curate</th>
                 </tr>
@@ -450,9 +393,6 @@ export function WildfireDashboard({ survivorDistressRows, onInboxRefresh }: Prop
                       {row.personCountScanned !== undefined && row.personCountScanned !== null
                         ? row.personCountScanned
                         : "—"}
-                    </td>
-                    <td className="wf-inbox-msg">
-                      {row.instructions.trim() ? row.instructions : "—"}
                     </td>
                     <td className="wf-inbox-meta">{row.riskLine}</td>
                     <td className="wf-inbox-curate">

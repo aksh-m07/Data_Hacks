@@ -11,8 +11,9 @@
   --blue: #60a5fa;
   --danger: #f87171;
   --ok: #4ade80;
-  --radius: 12px;
-  --radius-lg: 16px;
+  /* Sharper panels — tweak once for the whole UI */
+  --radius: 5px;
+  --radius-lg: 7px;
   --font: "Manrope", "Avenir Next", "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, sans-serif;
   --font-display: "Manrope", "Avenir Next", "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, sans-serif;
   --content-max: min(1240px, 94vw);
@@ -23,6 +24,21 @@
     --bg: #f5f2ed;
     --text: rgba(20, 15, 10, 0.95);
     --muted: rgba(20, 15, 10, 0.6);
+  }
+
+  .app-root {
+    background-image:
+      radial-gradient(ellipse 100% 65% at 50% -10%, rgba(251, 146, 60, 0.1), transparent 52%),
+      radial-gradient(ellipse 60% 50% at 100% 20%, rgba(96, 165, 250, 0.08), transparent 48%),
+      radial-gradient(ellipse 85% 50% at 0% 90%, rgba(74, 222, 128, 0.06), transparent 55%),
+      linear-gradient(175deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 242, 237, 0.98) 45%, rgba(235, 230, 220, 1) 100%),
+      repeating-linear-gradient(
+        -18deg,
+        transparent,
+        transparent 7px,
+        rgba(80, 60, 40, 0.04) 7px,
+        rgba(80, 60, 40, 0.04) 8px
+      );
   }
 }
 
@@ -70,9 +86,22 @@ select {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
-  background-image: radial-gradient(ellipse 120% 80% at 50% -20%, rgba(251, 146, 60, 0.12), transparent 55%),
-    radial-gradient(ellipse 80% 50% at 100% 50%, rgba(96, 165, 250, 0.06), transparent 45%);
+  background-color: var(--bg);
+  /* Layered depth: warm + cool glows, bottom lift, subtle grain lines */
+  background-image:
+    radial-gradient(ellipse 110% 70% at 50% -18%, rgba(251, 146, 60, 0.14), transparent 52%),
+    radial-gradient(ellipse 65% 55% at 100% 15%, rgba(96, 165, 250, 0.09), transparent 48%),
+    radial-gradient(ellipse 90% 55% at 0% 85%, rgba(74, 222, 128, 0.05), transparent 55%),
+    radial-gradient(ellipse 80% 40% at 70% 100%, rgba(139, 92, 246, 0.06), transparent 50%),
+    linear-gradient(168deg, rgba(255, 255, 255, 0.03) 0%, transparent 42%, rgba(0, 0, 0, 0.22) 100%),
+    repeating-linear-gradient(
+      -18deg,
+      transparent,
+      transparent 6px,
+      rgba(255, 255, 255, 0.018) 6px,
+      rgba(255, 255, 255, 0.018) 7px
+    );
+  background-attachment: fixed;
 }
 
 .app-header {
@@ -104,7 +133,7 @@ select {
 .app-brand-mark {
   width: 36px;
   height: 36px;
-  border-radius: 10px;
+  border-radius: var(--radius);
   background: linear-gradient(135deg, var(--orange), #c2410c);
   box-shadow: 0 0 24px rgba(251, 146, 60, 0.35);
 }
@@ -139,7 +168,7 @@ select {
   font-size: 0.88rem;
   font-weight: 600;
   padding: 0.45rem 0.85rem;
-  border-radius: 999px;
+  border-radius: var(--radius);
   cursor: pointer;
   transition: color 0.15s, background 0.15s, border-color 0.15s;
 }
@@ -174,7 +203,7 @@ select {
   align-items: center;
   gap: 0.45rem;
   padding: 0.35rem 0.75rem;
-  border-radius: 999px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--surface);
   font-size: 0.72rem;
@@ -327,8 +356,40 @@ select {
   font-weight: 600;
 }
 
-.wf-page-head .place-line {
-  margin: 0.5rem 0 0;
+.page-head.wf-station-head {
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.1rem 1rem;
+  border-bottom: none;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--surface2) 88%, transparent),
+    color-mix(in srgb, var(--surface) 72%, transparent) 58%
+  );
+  box-shadow: var(--elev-1);
+}
+
+.wf-station-head-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 0.85rem;
+}
+
+.wf-station-head-title-row h1 {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: min(100%, 12rem);
+}
+
+.wf-station-head .badge {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.wf-station-head .place-line {
+  margin: 0.65rem 0 0;
   font-size: 0.88rem;
   color: var(--muted);
   display: flex;
@@ -339,6 +400,19 @@ select {
 
 .place-pin {
   color: var(--orange);
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.place-pin svg {
+  display: block;
+}
+
+/* Leaflet `DivIcon` landmark — no default tile square */
+.leaflet-landmark-icon {
+  background: transparent !important;
+  border: none !important;
 }
 
 .linkish {
@@ -384,7 +458,7 @@ select {
   flex: 1;
   min-width: 200px;
   padding: 0.55rem 0.75rem;
-  border-radius: 10px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--surface2);
   color: var(--text);
@@ -410,7 +484,7 @@ select {
   padding: 0;
   max-height: 220px;
   overflow-y: auto;
-  border-radius: 10px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--bg);
 }
@@ -616,7 +690,7 @@ select {
 .helper-page .aqi-strip,
 .helper-dash .aqi-strip {
   padding: 0.6rem 0.75rem;
-  border-radius: 10px;
+  border-radius: var(--radius);
   background: rgba(248, 113, 113, 0.12);
   font-size: 0.8rem;
   margin-bottom: 1rem;
@@ -707,7 +781,7 @@ select {
 .hr-input {
   width: 6rem;
   padding: 0.45rem 0.6rem;
-  border-radius: 10px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--surface2);
   color: var(--text);
@@ -771,7 +845,7 @@ select {
 
 .wf-alert-modal-risk {
   padding: 0.65rem 0.75rem;
-  border-radius: 10px;
+  border-radius: var(--radius);
   background: rgba(251, 146, 60, 0.12);
   border: 1px solid rgba(251, 146, 60, 0.25);
   font-weight: 700;
@@ -868,7 +942,7 @@ select {
 .wf-distress-textarea {
   width: 100%;
   padding: 0.6rem 0.75rem;
-  border-radius: 10px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--surface2);
   color: var(--text);
@@ -965,7 +1039,7 @@ select {
 .wf-voice-textarea {
   width: 100%;
   padding: 0.55rem 0.65rem;
-  border-radius: 10px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text);
@@ -993,7 +1067,7 @@ select {
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.06);
   color: inherit;
-  border-radius: 10px;
+  border-radius: var(--radius);
   padding: 0.45rem 0.65rem;
   font-size: 0.85rem;
   cursor: pointer;
@@ -1003,7 +1077,7 @@ select {
   display: inline-block;
   margin: 0.25rem 0 0;
   padding: 0.2rem 0.5rem;
-  border-radius: 6px;
+  border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 700;
   background: rgba(249, 115, 22, 0.25);
@@ -1017,7 +1091,7 @@ select {
 
 .banner {
   padding: 0.65rem 0.75rem;
-  border-radius: 10px;
+  border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.06);
   font-size: 0.85rem;
   margin-bottom: 0.75rem;
@@ -1067,11 +1141,6 @@ select {
 }
 .risk-banner.dash-critical {
   background: rgba(168, 85, 247, 0.22);
-}
-
-.why-footnote {
-  margin: 0 0 0.75rem;
-  line-height: 1.45;
 }
 
 .why h2,
@@ -1157,7 +1226,7 @@ select {
 
 .wf-inbox-table-wrap {
   overflow-x: auto;
-  border-radius: 10px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--surface);
 }
@@ -1232,7 +1301,7 @@ select {
 .pill {
   font-size: 0.78rem;
   padding: 0.35rem 0.65rem;
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -1245,7 +1314,7 @@ select {
 
 .metric {
   padding: 0.75rem;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -1275,7 +1344,7 @@ select {
 
 .leaflet-map {
   height: 220px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -1312,7 +1381,7 @@ select {
 
 .btn {
   padding: 0.55rem 0.9rem;
-  border-radius: 10px;
+  border-radius: var(--radius);
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.08);
   color: inherit;
@@ -1346,7 +1415,7 @@ select {
   width: 100%;
   min-height: 48px;
   margin-top: 0;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   border: none;
   background: var(--orange);
   color: #1a0f08;
@@ -1402,7 +1471,7 @@ select {
   font: inherit;
   font-size: 0.78rem;
   padding: 0.35rem 0.65rem;
-  border-radius: 999px;
+  border-radius: var(--radius);
   cursor: pointer;
   touch-action: manipulation;
 }
@@ -1414,7 +1483,7 @@ select {
 
 .video-hero {
   position: relative;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   background: #0a0a0a;
   margin-bottom: 0.75rem;
@@ -1485,7 +1554,7 @@ select {
 .speech-preview {
   margin: 0.5rem 0 0;
   padding: 0.5rem 0.65rem;
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.06);
   font-size: 0.82rem;
 }
@@ -1508,7 +1577,7 @@ select {
 
 .cam-wrap {
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 0.45rem;
   background: rgba(0, 0, 0, 0.25);
 }
@@ -1521,7 +1590,7 @@ select {
 
 .video-stack {
   position: relative;
-  border-radius: 10px;
+  border-radius: var(--radius);
   overflow: hidden;
   background: #000;
 }
@@ -1597,7 +1666,7 @@ select {
   text-align: center;
   margin-top: 1rem;
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   background: var(--danger);
   color: #fff;
   font-weight: 800;
@@ -1800,8 +1869,8 @@ select {
 
 /* ---------- Modular style layer (style-only overrides) ---------- */
 :root {
-  --radius: 14px;
-  --radius-lg: 20px;
+  --radius: 8px;
+  --radius-lg: 10px;
   --line-soft: rgba(255, 255, 255, 0.1);
   --line-soft-strong: rgba(255, 255, 255, 0.16);
   --panel-hi: rgba(255, 255, 255, 0.06);
@@ -1893,7 +1962,7 @@ body {
 
 .field-soft {
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: var(--radius);
   box-shadow: inset 0 0 0 1px var(--line-soft);
 }
 
@@ -1934,7 +2003,7 @@ body {
 
 :is(.btn, .chip, .back-btn, .app-nav-link) {
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--radius);
   box-shadow: inset 0 0 0 1px var(--line-soft);
   transition: box-shadow 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
@@ -1955,7 +2024,6 @@ body {
 }
 
 .badge {
-  border-radius: 999px;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--orange) 35%, transparent);
 }
 
@@ -2093,7 +2161,7 @@ body {
 
 .survivor-head-panel {
   padding: 0.8rem 0.9rem;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--surface2) 78%, transparent);
   box-shadow: var(--elev-1);
 }
@@ -2116,7 +2184,7 @@ body {
 
 .survivor-head-kpi {
   padding: 0.55rem 0.6rem;
-  border-radius: 10px;
+  border-radius: var(--radius);
   background: color-mix(in srgb, var(--surface) 74%, transparent);
 }
 
@@ -2211,12 +2279,89 @@ body {
   background: color-mix(in srgb, var(--surface) 78%, transparent);
 }
 
+.survivor-metric-number {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.survivor-metric-note {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.76rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
 .survivor-breath-card {
   margin-top: 0.75rem;
-  padding: 0.7rem 0.85rem;
-  border-radius: 14px;
+  padding: 0.75rem 0.85rem;
+  border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--surface2) 70%, transparent);
   box-shadow: var(--elev-1);
+}
+
+.survivor-breath-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.survivor-breath-readout {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--text) 92%, #ef4444);
+}
+
+.survivor-breath-graph-wrap {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+.survivor-breath-graph {
+  width: 100%;
+  min-height: 130px;
+  border-radius: var(--radius);
+  background:
+    linear-gradient(180deg, rgba(239, 68, 68, 0.08), rgba(239, 68, 68, 0.02)),
+    color-mix(in srgb, var(--surface) 84%, transparent);
+}
+
+.graph-axis {
+  stroke: rgba(255, 255, 255, 0.34);
+  stroke-width: 1;
+}
+
+.graph-grid {
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 1;
+}
+
+.graph-line-red {
+  fill: none;
+  stroke: #ef4444;
+  stroke-width: 2.3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.45));
+}
+
+.survivor-breath-ylabels {
+  width: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0.05rem 0;
+  font-size: 0.66rem;
+  color: var(--muted);
+  line-height: 1;
 }
 
 .survivor-help-note {
@@ -2264,7 +2409,7 @@ body {
 .survivor-pulse-btn {
   width: 100%;
   margin-top: 0.25rem;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-weight: 700;
   background: color-mix(in srgb, var(--blue) 28%, transparent);
 }
@@ -2282,7 +2427,7 @@ body {
   font-size: 0.74rem;
   line-height: 1.35;
   padding: 0.45rem 0.55rem;
-  border-radius: 10px;
+  border-radius: var(--radius);
   overflow-wrap: anywhere;
   background: color-mix(in srgb, var(--surface2) 86%, transparent);
 }
@@ -2310,4 +2455,186 @@ body {
 .survivor-distress-btn {
   width: 100%;
   max-width: 20rem;
+}
+
+.survivor-distress-card--side {
+  margin: 0;
+  max-width: none;
+  width: 100%;
+}
+
+.survivor-distress-card--side .survivor-distress-btn {
+  max-width: none;
+}
+
+/* Survivor — wildfire Nia + Groq (under breath graph in main column) */
+.survivor-wf-protocol {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--ok) 12%, transparent),
+    color-mix(in srgb, var(--surface2) 90%, transparent) 55%
+  );
+  box-shadow: var(--elev-1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.survivor-wf-protocol--embedded {
+  margin-top: 0.85rem;
+}
+
+.survivor-wf-protocol-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.survivor-wf-detail-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.survivor-wf-chips,
+.survivor-wf-quick-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.survivor-wf-chip,
+.survivor-wf-proto {
+  font-size: 0.78rem;
+}
+
+.survivor-wf-textarea {
+  width: 100%;
+  min-height: 4.5rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: inherit;
+  font: inherit;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.survivor-wf-textarea:focus {
+  outline: 2px solid color-mix(in srgb, var(--ok) 55%, transparent);
+  outline-offset: 1px;
+}
+
+.survivor-wf-textarea:disabled {
+  opacity: 0.65;
+}
+
+.survivor-wf-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.survivor-wf-send {
+  min-width: 8rem;
+}
+
+.survivor-wf-quick-label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.survivor-wf-status {
+  margin: 0;
+  color: color-mix(in srgb, var(--ok) 85%, var(--text));
+}
+
+.survivor-wf-nia-warn {
+  margin: 0;
+}
+
+.survivor-wf-response-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  overflow: hidden;
+}
+
+.survivor-wf-response-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.65rem;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface2) 70%, transparent);
+}
+
+.survivor-wf-response-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-right: auto;
+}
+
+.survivor-wf-nia-pill {
+  font-size: 0.72rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ok) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ok) 40%, transparent);
+}
+
+.survivor-wf-speak {
+  margin-left: auto;
+}
+
+.survivor-wf-response-body {
+  padding: 0.75rem 0.85rem;
+  min-height: 5rem;
+  max-height: 28rem;
+  overflow: auto;
+}
+
+.survivor-wf-response-pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.survivor-wf-placeholder {
+  margin: 0;
+}
+
+.survivor-wf-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.5rem 0.65rem 0.65rem;
+  border-top: 1px solid var(--border);
+}
+
+.survivor-wf-source-chip {
+  font-size: 0.72rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface2) 88%, transparent);
+  border: 1px solid var(--border);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

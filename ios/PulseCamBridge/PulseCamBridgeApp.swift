@@ -8,9 +8,6 @@ struct PulseCamBridgeApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(appState)
-                .onOpenURL { url in
-                    appState.handle(url: url)
-                }
         }
     }
 }

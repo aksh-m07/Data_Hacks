@@ -1,6 +1,7 @@
 import { type MouseEvent, useEffect, useRef, useState } from "react";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { useBreathing } from "../hooks/useBreathing";
+import { useBreathingLandmarks } from "../hooks/useBreathingLandmarks";
 import { useFalseColorOverlay } from "../hooks/useFalseColorOverlay";
 import { usePersonDetection } from "../hooks/usePersonDetection";
 import { usePersonOverlayCanvas } from "../hooks/usePersonOverlayCanvas";
@@ -23,7 +24,8 @@ export function HelperDashboard() {
     ready,
   );
   const rppg = useRppg(videoRef, roiRef);
-  const breathing = useBreathing(videoRef, roiRef);
+  const { landmarksRef, status: lmStatus } = useBreathingLandmarks(videoRef, ready);
+  const breathing = useBreathing(videoRef, roiRef, landmarksRef);
 
   const falseColorCanvasRef = useRef<HTMLCanvasElement>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -34,6 +36,8 @@ export function HelperDashboard() {
     overlayCanvasRef,
     persons,
     ready && detStatus === "ready",
+    landmarksRef,
+    lmStatus === "ready",
   );
 
   const speech = useSpeechRecognition();

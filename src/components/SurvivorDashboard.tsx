@@ -1,28 +1,36 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useBreathing } from "../hooks/useBreathing";
+import { useBreathingLandmarks } from "../hooks/useBreathingLandmarks";
 import { usePersonDetection } from "../hooks/usePersonDetection";
 import { usePersonOverlayCanvas } from "../hooks/usePersonOverlayCanvas";
-import { useRppg } from "../hooks/useRppg";
 import { useWildfireLocation } from "../hooks/useWildfireLocation";
 import { useWildfireRisk } from "../hooks/useWildfireRisk";
-import type { FacingMode } from "../hooks/useWebcamStream";
 import { useWebcamStream } from "../hooks/useWebcamStream";
 import { isWildfireModelInRange } from "../lib/wildfireCalibration";
 import { broadcastWildfireShare } from "../lib/crossDashboardShare";
 import { appendInboxAlertIfNew } from "../lib/incomingHelperInbox";
-import { createPulseSession, pulseSessionEventsUrl, type PulseResult, type PulseSession } from "../lib/pulseBridge";
+import type { SurvivorLiveSnapshot } from "../lib/wildfireCivilianProtocol";
+import { SurvivorWildfireProtocolPanel } from "./SurvivorWildfireProtocolPanel";
 
 type Props = {
   onInboxRefresh: () => void;
 };
+
+/** Hide benign Chrome camera race + help-link noise from the UI */
+function formatSurvivorCameraError(raw: string | undefined): string | null {
+  if (!raw?.trim()) return null;
+  const t = raw.toLowerCase();
+  if (t.includes("play() request was interrupted") || t.includes("interrupted by a new load")) return null;
+  if (t.includes("goo.gl/") || t.includes("https://goo.gl")) return null;
+  return raw;
+}
 
 /** Survivor: webcam person detection + rPPG heartbeat; station broadcasts; one-tap distress (people count only) to Wildfire. */
 export function SurvivorDashboard({ onInboxRefresh }: Props) {
   const loc = useWildfireLocation();
   const wf = useWildfireRisk(loc.lat, loc.lon);
 
-  const [facing, setFacing] = useState<FacingMode>("user");
-  const { videoRef, error: camErr, ready } = useWebcamStream(facing);
+  const { videoRef, error: camErr, ready } = useWebcamStream("user");
   const {
     persons,
     personCount,
@@ -31,22 +39,20 @@ export function SurvivorDashboard({ onInboxRefresh }: Props) {
     status: detStatus,
     roiRef,
   } = usePersonDetection(videoRef, ready);
-  const rppg = useRppg(videoRef, roiRef);
-  const breathing = useBreathing(videoRef, roiRef);
+  const { landmarksRef, status: lmStatus } = useBreathingLandmarks(videoRef, ready);
+  const breathing = useBreathing(videoRef, roiRef, landmarksRef);
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
   usePersonOverlayCanvas(
     videoRef,
     overlayCanvasRef,
     persons,
     ready && detStatus === "ready",
+    landmarksRef,
+    lmStatus === "ready",
   );
 
   const [distressSending, setDistressSending] = useState(false);
   const [distressSentFlash, setDistressSentFlash] = useState(false);
-  const [phonePulse, setPhonePulse] = useState<PulseResult | null>(null);
-  const [pulseSession, setPulseSession] = useState<PulseSession | null>(null);
-  const [pulseStatus, setPulseStatus] = useState<"idle" | "starting" | "waiting" | "received" | "error">("idle");
-  const [pulseErr, setPulseErr] = useState<string | null>(null);
 
   const lat = loc.lat;
   const lon = loc.lon;
@@ -60,59 +66,44 @@ export function SurvivorDashboard({ onInboxRefresh }: Props) {
         ? "Vision model failed to load"
         : `${personCount} person${personCount === 1 ? "" : "s"} (COCO-SSD)`;
 
-  const pulseBpm = phonePulse?.bpm ?? rppg.bpm;
-  const pulseSource = phonePulse ? "iPhone camera PPG" : "webcam rPPG";
+  const signalQuality =
+    detStatus !== "ready"
+      ? "Initializing"
+      : breathing.bpm != null && breathing.confidence >= 0.2
+        ? "Stable"
+      : personCount > 0
+          ? "Partial"
+          : "Low";
 
-  useEffect(() => {
-    if (!pulseSession) return;
-    const es = new EventSource(pulseSessionEventsUrl(pulseSession.sessionId));
-    es.onmessage = (ev) => {
-      try {
-        const parsed = JSON.parse(ev.data) as PulseResult;
-        if (parsed && typeof parsed.bpm === "number") {
-          setPhonePulse(parsed);
-          setPulseStatus("received");
-          setPulseErr(null);
-        }
-      } catch {
-        /* ignore malformed event payloads */
-      }
-    };
-    es.onerror = () => {
-      setPulseStatus((prev) => (prev === "received" ? prev : "error"));
-    };
-    return () => es.close();
-  }, [pulseSession]);
+  const graphMin = 0;
+  const graphMax = 30;
+  const graphW = 360;
+  const graphH = 130;
+  const graphPoints =
+    breathing.trend.length > 1
+      ? breathing.trend
+          .map((v, i, arr) => {
+            const x = (i / (arr.length - 1)) * graphW;
+            const clamped = Math.max(graphMin, Math.min(graphMax, v));
+            const y = graphH - ((clamped - graphMin) / (graphMax - graphMin)) * graphH;
+            return `${x.toFixed(1)},${y.toFixed(1)}`;
+          })
+          .join(" ")
+      : "";
 
-  async function startPhonePulseMeasure() {
-    if (pulseStatus === "starting" || pulseStatus === "waiting") return;
-    setPulseStatus("starting");
-    setPulseErr(null);
-    try {
-      const session = await createPulseSession();
-      setPulseSession(session);
-      setPulseStatus("waiting");
-      const isIPhone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-      if (isIPhone) {
-        window.location.href = session.deepLink;
-      } else {
-        window.open(session.webMeasureUrl, "_blank", "noopener,noreferrer");
-      }
-    } catch (e) {
-      setPulseStatus("error");
-      setPulseErr(e instanceof Error ? e.message : "Could not start iPhone pulse measurement.");
-    }
-  }
+  const camErrDisplay = formatSurvivorCameraError(camErr);
 
-  async function copySessionCode() {
-    if (!pulseSession) return;
-    try {
-      await navigator.clipboard.writeText(pulseSession.sessionId);
-      setPulseErr(null);
-    } catch {
-      setPulseErr("Could not copy automatically. Copy session code manually.");
-    }
-  }
+  const wildfireProtocolSnapshot: SurvivorLiveSnapshot = {
+    placeLabel: loc.placeLabel,
+    riskBand: wf.cls,
+    riskPct: outOfRange ? null : Math.round(wf.tenDayWildfirePct),
+    outOfRange,
+    personCount,
+    breathingNote:
+      breathing.bpm != null
+        ? `~${breathing.bpm}/min (rough motion trend, non-medical)`
+        : "estimating / no stable trend",
+  };
 
   async function sendDistressCall() {
     if (distressSending) return;
@@ -154,16 +145,11 @@ export function SurvivorDashboard({ onInboxRefresh }: Props) {
             <h1>Survivor</h1>
             <p className="badge">Check-in · Vision · Distress</p>
             <p className="survivor-head-copy">
-              Person detection and heartbeat (rPPG) run in your browser and are not medical-grade. Wildfire station
-              broadcasts still open here with Read aloud.
+              This view uses webcam person detection and breathing trend only. No heart-rate claim is shown here to
+              avoid false precision.
             </p>
             {loc.placeLabel ? (
-              <p className="place-line survivor-place-line">
-                <span className="place-pin" aria-hidden>
-                  ◎
-                </span>
-                {loc.placeLabel}
-              </p>
+              <p className="place-line survivor-place-line">{loc.placeLabel}</p>
             ) : (
               <p className="small muted survivor-place-line">
                 Allow location or set a place from the Wildfire tab for risk context.
@@ -184,40 +170,23 @@ export function SurvivorDashboard({ onInboxRefresh }: Props) {
                 </strong>
               </div>
               <div className="survivor-head-kpi">
-                <span className="survivor-head-kpi-label">Pulse</span>
-                <strong>{pulseBpm != null ? `~${pulseBpm} BPM` : "Estimating"}</strong>
+                <span className="survivor-head-kpi-label">Signal</span>
+                <strong>{signalQuality}</strong>
               </div>
             </div>
           </section>
         </div>
       </header>
 
-      {camErr ? (
+      {camErrDisplay ? (
         <p className="small err survivor-cam-err" role="alert">
-          Camera: {camErr}
+          Camera: {camErrDisplay}
         </p>
       ) : null}
 
       <div className="survivor-shell">
         <section className="survivor-main-card">
           <div className="survivor-main-top">
-            <div className="cam-controls">
-              <span className="cam-controls-label">Camera</span>
-              <button
-                type="button"
-                className={`chip ${facing === "user" ? "chip-on" : ""}`}
-                onClick={() => setFacing("user")}
-              >
-                Front
-              </button>
-              <button
-                type="button"
-                className={`chip ${facing === "environment" ? "chip-on" : ""}`}
-                onClick={() => setFacing("environment")}
-              >
-                Back
-              </button>
-            </div>
             <p className="survivor-live-note">Live monitoring</p>
           </div>
 
@@ -228,49 +197,48 @@ export function SurvivorDashboard({ onInboxRefresh }: Props) {
 
           <div className="survivor-metrics-grid">
             <div className="metric-card survivor-metric-card">
-              <span className="metric-label">Detection (COCO-SSD)</span>
-              <span className="metric-value">{detLabel}</span>
+              <span className="metric-label">People detected</span>
+              <span className="metric-value survivor-metric-number">{personCount}</span>
+              <span className="survivor-metric-note">{detLabel}</span>
             </div>
             <div className="metric-card survivor-metric-card">
-              <span className="metric-label">rPPG pulse</span>
-              <span className="metric-value">
-                {pulseBpm != null ? (
-                  <>
-                    ~{pulseBpm} BPM · {phonePulse ? "iPhone measurement" : rppg.status}
-                  </>
-                ) : (
-                  <>{rppg.status}</>
-                )}
+              <span className="metric-label">Camera signal quality</span>
+              <span className="metric-value survivor-metric-number">{signalQuality}</span>
+              <span className="survivor-metric-note">
+                {detStatus === "ready" ? "person ROI tracking" : "warming up"}
               </span>
             </div>
           </div>
 
-          <div className="survivor-breath-card">
-            <span className="metric-label">Breathing (estimate)</span>
-            <div className="breath-bars" aria-label="Breathing animation">
-              {[0, 1, 2, 3, 4].map((i) => {
-                const bpm = breathing.bpm ?? 14;
-                const cycleMs = Math.round((60 / bpm) * 1000);
-                return (
-                  <span
-                    key={i}
-                    className="breath-bar"
-                    style={{
-                      animationDuration: `${cycleMs}ms`,
-                      animationDelay: `${(i / 5) * cycleMs}ms`,
-                    }}
-                  />
-                );
-              })}
-              <span className="breath-label">
+          <div className="survivor-breath-card" aria-label="Breathing trend graph">
+            <div className="survivor-breath-head">
+              <span className="metric-label">Breathing trend (0–30 / min)</span>
+              <span className="survivor-breath-readout">
                 {breathing.bpm != null ? `~${breathing.bpm}/min` : "estimating…"}
               </span>
+            </div>
+            <div className="survivor-breath-graph-wrap">
+              <svg viewBox={`0 0 ${graphW} ${graphH}`} className="survivor-breath-graph" role="img">
+                <line x1="0" y1={graphH} x2={graphW} y2={graphH} className="graph-axis" />
+                <line x1="0" y1={graphH * (2 / 3)} x2={graphW} y2={graphH * (2 / 3)} className="graph-grid" />
+                <line x1="0" y1={graphH * (1 / 3)} x2={graphW} y2={graphH * (1 / 3)} className="graph-grid" />
+                <line x1="0" y1="0" x2={graphW} y2="0" className="graph-grid" />
+                {graphPoints ? <polyline points={graphPoints} className="graph-line-red" /> : null}
+              </svg>
+              <div className="survivor-breath-ylabels" aria-hidden>
+                <span>30</span>
+                <span>20</span>
+                <span>10</span>
+                <span>0</span>
+              </div>
             </div>
           </div>
 
           <p className="small helper-hint survivor-help-note">
-            Green overlay = person centroid. rPPG needs a steady face and good light.
+            Green overlay = person centroid. Breathing trend is rough and non-medical.
           </p>
+
+          <SurvivorWildfireProtocolPanel snapshot={wildfireProtocolSnapshot} embedded />
         </section>
 
         <aside className="survivor-side-card">
@@ -284,64 +252,35 @@ export function SurvivorDashboard({ onInboxRefresh }: Props) {
             </p>
           </section>
           <section className="survivor-status-card">
-            <p className="survivor-status-label">Heart rate source</p>
+            <p className="survivor-status-label">Breathing trend</p>
             <p className="survivor-status-value">
-              {pulseBpm != null ? `~${pulseBpm} BPM` : "Estimating…"}
+              {breathing.bpm != null ? `~${breathing.bpm}/min` : "Estimating…"}
             </p>
-            <p className="survivor-status-sub">Using {pulseSource}.</p>
+            <p className="survivor-status-sub">For motion trend only, not a medical respiratory value.</p>
           </section>
-          <section className="survivor-status-card">
-            <p className="survivor-status-label">iPhone pulse</p>
+
+          <section className="survivor-distress-section survivor-distress-card survivor-distress-card--side">
+            <p className="survivor-distress-lede">
+              When the <strong>Wildfire station</strong> sends a broadcast, it opens here with <strong>Read aloud</strong>.
+              <strong> Send distress call</strong> immediately logs the <strong>number of people scanned</strong> to the
+              Wildfire table (no message form).
+            </p>
             <button
               type="button"
-              className="btn survivor-pulse-btn"
-              onClick={() => void startPhonePulseMeasure()}
-              disabled={pulseStatus === "starting" || pulseStatus === "waiting"}
+              className="broadcast-alert-btn survivor-distress-btn"
+              onClick={() => void sendDistressCall()}
+              disabled={distressSending}
             >
-              {pulseStatus === "starting"
-                ? "Starting…"
-                : pulseStatus === "waiting"
-                  ? "Waiting for iPhone…"
-                  : "Measure Pulse on iPhone"}
+              {distressSending ? "Sending…" : "Send distress call"}
             </button>
-            <p className="survivor-status-sub">
-              {pulseSession
-                ? "Use this full session code in the iPhone app."
-                : "Starts phone camera measurement and syncs BPM back here."}
-            </p>
-            {pulseSession ? (
-              <div className="survivor-session-row">
-                <code className="survivor-session-code">{pulseSession.sessionId}</code>
-                <button type="button" className="btn survivor-copy-btn" onClick={() => void copySessionCode()}>
-                  Copy
-                </button>
-              </div>
+            {distressSentFlash ? (
+              <p className="survivor-distress-sent small" role="status">
+                Sent — check the Wildfire station table.
+              </p>
             ) : null}
-            {pulseErr ? <p className="small err">{pulseErr}</p> : null}
           </section>
         </aside>
       </div>
-
-      <section className="survivor-distress-section survivor-distress-card">
-        <p className="survivor-distress-lede">
-          When the <strong>Wildfire station</strong> sends a broadcast, it opens here with <strong>Read aloud</strong>.
-          <strong> Send distress call</strong> immediately logs the <strong>number of people scanned</strong> to the
-          Wildfire table (no message form).
-        </p>
-        <button
-          type="button"
-          className="broadcast-alert-btn survivor-distress-btn"
-          onClick={() => void sendDistressCall()}
-          disabled={distressSending}
-        >
-          {distressSending ? "Sending…" : "Send distress call"}
-        </button>
-        {distressSentFlash ? (
-          <p className="survivor-distress-sent small" role="status">
-            Sent — check the Wildfire station table.
-          </p>
-        ) : null}
-      </section>
     </div>
   );
 }

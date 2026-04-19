@@ -1,28 +1,39 @@
-import { useEffect, useMemo } from "react";
-import { MapContainer, TileLayer, Polygon, Polyline, CircleMarker } from "react-leaflet";
-import L from "leaflet";
-import { destinationPoint, sectorRing } from "../lib/geo";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { MapContainer, TileLayer, Polygon, Polyline, Marker, useMap } from "react-leaflet";
+import { destinationPoint, sectorRing, haversineKm } from "../lib/geo";
 import { fetchEvacRoute } from "../lib/osrm";
-import { useState } from "react";
-
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
-
-const DefaultIcon = L.icon({
-  iconUrl: markerIcon,
-  iconRetinaUrl: markerIcon2x,
-  shadowUrl: markerShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
-L.Marker.prototype.options.icon = DefaultIcon;
+import { createLandmarkMapIcon } from "./LandmarkGlyph";
 
 type Props = {
   lat: number;
   lon: number;
   windFromDeg: number;
 };
+
+/** `MapContainer` only uses initial center — keep view in sync when GPS or search updates coords. */
+function MapViewSync({ lat, lon }: { lat: number; lon: number }) {
+  const map = useMap();
+  const prev = useRef<[number, number] | null>(null);
+
+  useEffect(() => {
+    const next: [number, number] = [lat, lon];
+    const p = prev.current;
+    if (!p) {
+      map.setView(next, map.getZoom(), { animate: false });
+      prev.current = next;
+      return;
+    }
+    const distKm = haversineKm(p[0], p[1], lat, lon);
+    if (distKm > 1.5) {
+      map.flyTo(next, map.getZoom(), { duration: 1.1 });
+    } else if (distKm > 0.08) {
+      map.panTo(next, { animate: false });
+    }
+    prev.current = next;
+  }, [lat, lon, map]);
+
+  return null;
+}
 
 export function SpreadMap({ lat, lon, windFromDeg }: Props) {
   const spread = (windFromDeg + 180) % 360;
@@ -37,6 +48,8 @@ export function SpreadMap({ lat, lon, windFromDeg }: Props) {
   );
 
   const [route, setRoute] = useState<[number, number][] | null>(null);
+
+  const landmarkIcon = useMemo(() => createLandmarkMapIcon(), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -56,15 +69,12 @@ export function SpreadMap({ lat, lon, windFromDeg }: Props) {
         className="leaflet-map"
         scrollWheelZoom
       >
+        <MapViewSync lat={lat} lon={lon} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <CircleMarker
-          center={[lat, lon]}
-          radius={8}
-          pathOptions={{ color: "#f97316", fillColor: "#fb923c", fillOpacity: 0.9 }}
-        />
+        <Marker position={[lat, lon]} icon={landmarkIcon} />
         <Polygon positions={cone} pathOptions={{ color: "#ea580c", fillOpacity: 0.25 }} />
         {route && route.length > 1 ? (
           <Polyline positions={route} pathOptions={{ color: "#22c55e", weight: 5 }} />
